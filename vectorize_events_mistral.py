@@ -26,7 +26,7 @@ import time
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set
 
-from mistralai.client import MistralClient
+from mistralai.client import Mistral
 
 
 DEFAULT_INPUT_PATH = "data/evenements_publics_openagenda_culture_ile_de_france_rag.jsonl"
@@ -271,7 +271,7 @@ def embed_texts(client: Any, texts: List[str], model: str, max_retries: int = 3)
     last_error: Exception = RuntimeError("embed_texts: aucune tentative effectuee")
     for attempt in range(1, max_retries + 1):
         try:
-            response = client.embeddings(model=model, input=texts)
+            response = client.embeddings.create(model=model, inputs=texts)
             return [entry.embedding for entry in response.data]
         except Exception as exc:
             last_error = exc
@@ -416,7 +416,7 @@ def vectorize_jsonl(
     output_file = Path(output_path)
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
-    mistral_client = client or MistralClient(api_key=api_key)
+    mistral_client = client or Mistral(api_key=api_key)
 
     stats: Dict[str, int] = {
         "read": 0,
