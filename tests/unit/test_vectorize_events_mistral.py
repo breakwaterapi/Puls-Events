@@ -19,13 +19,18 @@ class _FakeEmbeddingResponse:
         self.data = [_FakeEmbeddingItem(v) for v in vectors]
 
 
-class FakeMistralClient:
-    def embeddings(self, model: str, input: List[str]) -> Any:  # noqa: A002
+class _FakeEmbeddingsResource:
+    def create(self, model: str, inputs: List[str]) -> Any:
         vectors = []
-        for text in input:
+        for text in inputs:
             text_len = float(len(text))
             vectors.append([text_len, 1.0, 2.0])
         return _FakeEmbeddingResponse(vectors)
+
+
+class FakeMistralClient:
+    def __init__(self) -> None:
+        self.embeddings = _FakeEmbeddingsResource()
 
 
 def test_prepare_embedding_document_from_normalized_record() -> None:
